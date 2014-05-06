@@ -12,7 +12,6 @@
 @implementation PSMObserver {
 
 @private
-    id _observationId;
     NSString* _observationContext;
 
 }
