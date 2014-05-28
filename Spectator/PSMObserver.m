@@ -9,6 +9,8 @@
 #import "PSMObserver.h"
 
 
+static NSMutableDictionary* observers;
+
 @implementation PSMObserver {
 
 @private
@@ -46,6 +48,14 @@
                                                          options:options
                                                      updateBlock:updateBlock];
 
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        observers = [NSMutableDictionary new];
+    });
+
+    NSString* key = [NSString stringWithFormat:@"%p:%@", object, keyPath];
+    observers[key] = observer;
+
     return observer;
 }
 
@@ -66,6 +76,9 @@
 }
 
 - (void)dealloc {
+
+    NSString* key = [NSString stringWithFormat:@"%p:%@", self, _keyPath];
+    [observers removeObjectForKey:key];
 
     [_object removeObserver:self
                  forKeyPath:_keyPath
